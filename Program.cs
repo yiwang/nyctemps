@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Xml;
-using System.Xml.Linq;
-using System.Text;
 
 namespace CodeTest
 {
@@ -51,7 +47,7 @@ namespace CodeTest
 
         private static int comp_func(Record x, Record y)
         {
-            if (x.date > y.date)  return 1;
+            if (x.date > y.date) return 1;
             if (x.date == y.date) return 0;
             if (x.date < y.date) return -1;
 
@@ -65,7 +61,7 @@ namespace CodeTest
             double std;
             int N = array_rec2.Length;
             double sum_N = 0;
-            
+
 
             // calc sum of all records
             for (int i = 0; i < N; i++)
@@ -78,16 +74,16 @@ namespace CodeTest
             double sum_sqare = 0;
             for (int i = 0; i < N; i++)
             {
-                sum_sqare += Math.Pow(array_rec2[i].ave_temp - mean,2);
+                sum_sqare += Math.Pow(array_rec2[i].ave_temp - mean, 2);
             }
             std = Math.Sqrt(sum_sqare / N);
 
-            
+
             // calc diff_std
             for (int i = 0; i < N; i++)
             {
                 array_rec2[i].diff_std = Math.Abs(mean - array_rec2[i].ave_temp);
-                if (array_rec2[i].diff_std > 2*std)
+                if (array_rec2[i].diff_std > 2 * std)
                 {
                     Console.WriteLine(array_rec2[i].date.ToString("dd-MMM-yyyy") + "," + array_rec2[i].ave_temp.ToString() + "," + array_rec2[i].diff_std.ToString());
 
@@ -114,32 +110,45 @@ namespace CodeTest
 
         private static void part1()
         {
-            list_rec2 = new List<Record>();            
+            list_rec2 = new List<Record>();
             int size = array_rec.Length;
             for (int i = 0; i < size; i++)
             {
                 list_rec2.Add(array_rec[i]);
+                DateTime next_date;
                 if (i != size - 1)
                 {
-                    DateTime next_date = array_rec[i].date.AddDays(1);
+                    int j = 1;
+
+                a:
+                    next_date = array_rec[i].date.AddDays(j);
                     if (next_date != array_rec[i + 1].date)
                     {
-                        
-                        
+
+
                         // insert extrapolate element
                         Record new_rec = new Record();
                         new_rec.date = next_date;
-                        new_rec.high_temp = (array_rec[i].high_temp+array_rec[i+1].high_temp)/2.0;
-                        new_rec.low_temp = (array_rec[i].low_temp+array_rec[i+1].low_temp)/2.0;
+                        new_rec.high_temp = (array_rec[i].high_temp + array_rec[i + 1].high_temp) / 2.0;
+                        new_rec.low_temp = (array_rec[i].low_temp + array_rec[i + 1].low_temp) / 2.0;
+                        new_rec.ave_temp = (new_rec.low_temp + new_rec.high_temp) / 2.0;
                         new_rec.is_missing = true;
 
                         Console.WriteLine(next_date.ToString("dd-MMM-yyyy"));
 
                         list_rec2.Add(new_rec);
                     }
-                    
+                    else
+                    {
+                        goto b;
+                    }
+                    j++;
+
+                    goto a;
+                b:
+                    { }
                 }
-                
+
             }
             array_rec2 = list_rec2.ToArray();
         }
@@ -182,7 +191,7 @@ namespace CodeTest
                         //*/
                         list_rec.Add(rec);
                     }
-                }                
+                }
             }
             catch (Exception e)
             {
