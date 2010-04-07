@@ -15,42 +15,106 @@ namespace CodeTest
 
         static List<Record> list_rec2;
         static Record[] array_rec2;
-        static DateTime start_date;
-        static DateTime end_date;
 
         static void Main(string[] args)
         {
             read_data();
-            start_date = list_rec.First().date;
-            end_date = list_rec.Last().date;
-            Console.WriteLine(start_date + "," + end_date);
+
+            // sort first
+            sort_data();
 
             Console.WriteLine("Part 1");
-            part1(false);
+            part1();
+            Console.WriteLine("Enter to continue."); Console.ReadLine();
 
             Console.WriteLine("Part 2");
             part2();
+            Console.WriteLine("Enter to continue."); Console.ReadLine();
 
             Console.WriteLine("Part 3");
             part3();
-
             Console.ReadLine();
         }
 
+        private static void sort_data()
+        {
+            list_rec.Sort(comp_func);
+            array_rec = list_rec.ToArray();
+
+            int size = array_rec.Length;
+            for (int i = 0; i < size; i++)
+            {
+                //Console.WriteLine(array_rec[i].date);
+            }
+            //Console.ReadLine();
+        }
+
+        private static int comp_func(Record x, Record y)
+        {
+            if (x.date > y.date)  return 1;
+            if (x.date == y.date) return 0;
+            if (x.date < y.date) return -1;
+
+            return -1;
+        }
+
+
         private static void part3()
         {
-            Console.WriteLine("not implemented, but mean for each record is calclued");
+            //Console.WriteLine("not implemented, but mean for each record is calclued");
+            double std;
+            int N = array_rec2.Length;
+            double sum_N = 0;
+            
+
+            // calc sum of all records
+            for (int i = 0; i < N; i++)
+            {
+                sum_N += array_rec2[i].ave_temp;
+            }
+            double mean = sum_N / N;
+
+            // calc std
+            double sum_sqare = 0;
+            for (int i = 0; i < N; i++)
+            {
+                sum_sqare += Math.Pow(array_rec2[i].ave_temp - mean,2);
+            }
+            std = Math.Sqrt(sum_sqare / N);
+
+            
+            // calc diff_std
+            for (int i = 0; i < N; i++)
+            {
+                array_rec2[i].diff_std = Math.Abs(mean - array_rec2[i].ave_temp);
+                if (array_rec2[i].diff_std > 2*std)
+                {
+                    Console.WriteLine(array_rec2[i].date.ToString("dd-MMM-yyyy") + "," + array_rec2[i].ave_temp.ToString() + "," + array_rec2[i].diff_std.ToString());
+
+                }
+            }
+
+            Console.WriteLine("date,average_temp,diff_std");
+            Console.WriteLine("mean is {0}", mean);
+            Console.WriteLine("std is {0}", std);
+
         }
 
         private static void part2()
         {
-            part1(true);
+            int size = array_rec2.Length;
+            for (int i = 0; i < size; i++)
+            {
+                if (array_rec2[i].is_missing)
+                {
+                    Console.WriteLine(array_rec2[i].date.ToString("dd-MMM-yyyy") + "," + array_rec2[i].high_temp.ToString() + "," + array_rec2[i].low_temp.ToString());
+                }
+            }
         }
 
-        private static void part1(bool print_value_for_part2)
+        private static void part1()
         {
-            list_rec2 = new List<Record>();
-            array_rec = list_rec.ToArray();
+            list_rec2 = new List<Record>();            
             int size = array_rec.Length;
             for (int i = 0; i < size; i++)
             {
@@ -67,15 +131,13 @@ namespace CodeTest
                         new_rec.date = next_date;
                         new_rec.high_temp = (array_rec[i].high_temp+array_rec[i+1].high_temp)/2.0;
                         new_rec.low_temp = (array_rec[i].low_temp+array_rec[i+1].low_temp)/2.0;
-                        if (print_value_for_part2)
-                        {
-                            Console.WriteLine(next_date.ToString("dd-MMM-yyyy") + "," + new_rec.high_temp.ToString() + "," + new_rec.low_temp.ToString());
-                        }
-                        else
-                        {
-                            Console.WriteLine(next_date.ToString("dd-MMM-yyyy"));
-                        }
+                        new_rec.is_missing = true;
+
+                        Console.WriteLine(next_date.ToString("dd-MMM-yyyy"));
+
+                        list_rec2.Add(new_rec);
                     }
+                    
                 }
                 
             }
@@ -108,6 +170,7 @@ namespace CodeTest
                         rec.high_temp = Convert.ToDouble(line_array[1]);
                         rec.low_temp = Convert.ToDouble(line_array[2]);
                         rec.ave_temp = (rec.high_temp + rec.low_temp) / 2.0;
+                        rec.is_missing = false;
 
                         /*
                         Console.WriteLine(line);
@@ -119,7 +182,7 @@ namespace CodeTest
                         //*/
                         list_rec.Add(rec);
                     }
-                }
+                }                
             }
             catch (Exception e)
             {
@@ -137,9 +200,7 @@ namespace CodeTest
         public double high_temp;
         public double low_temp;
         public double ave_temp;
-        public int std_status;
+        public double diff_std;
+        public bool is_missing;
     }
-
-
-
 }
