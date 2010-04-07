@@ -116,16 +116,14 @@ namespace CodeTest
             {
                 list_rec2.Add(array_rec[i]);
                 DateTime next_date;
+
+                // not last record
                 if (i != size - 1)
                 {
                     int j = 1;
-
-                a:
                     next_date = array_rec[i].date.AddDays(j);
-                    if (next_date != array_rec[i + 1].date)
+                    while (next_date != array_rec[i + 1].date)
                     {
-
-
                         // insert extrapolate element
                         Record new_rec = new Record();
                         new_rec.date = next_date;
@@ -137,16 +135,11 @@ namespace CodeTest
                         Console.WriteLine(next_date.ToString("dd-MMM-yyyy"));
 
                         list_rec2.Add(new_rec);
+                        
+                        j++;
+                        next_date = array_rec[i].date.AddDays(j);
                     }
-                    else
-                    {
-                        goto b;
-                    }
-                    j++;
 
-                    goto a;
-                b:
-                    { }
                 }
 
             }
